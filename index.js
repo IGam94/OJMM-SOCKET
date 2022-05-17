@@ -1,5 +1,5 @@
 const app = require("express")();
-const server = app.listen(process.env.PORT || 3000, () => {});
+const server = app.listen(process.env.PORT || 4000, () => {});
 
 const res = require("express/lib/response");
 const SocketIO = require("socket.io");
@@ -11,7 +11,8 @@ const io = SocketIO(server, {
     methods: ["GET", "POST"],
   },
 });
-
+let voteCnt = 0;
+let voteCnt2 = 0;
 //* 웹소켓 연결 시
 io.on("connection", (socket) => {
   console.log("접속", socket.id);
@@ -22,6 +23,19 @@ io.on("connection", (socket) => {
   });
   socket.on("chat-message", (msg) => {
     io.emit("chat-message", msg);
+  });
+  socket.on("voteClear", () => {
+    voteCnt = 0;
+    voteCnt2 = 0;
+    io.emit("voteClear", "CLEAR");
+  });
+  socket.on("vote", (cnt) => {
+    voteCnt += cnt;
+    io.emit("vote", voteCnt);
+  });
+  socket.on("vote2", (cnt) => {
+    voteCnt2 += cnt;
+    io.emit("vote2", voteCnt2);
   });
   //* 에러 시
   socket.on("error", (error) => {

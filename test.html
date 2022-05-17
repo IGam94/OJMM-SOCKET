@@ -29,17 +29,29 @@
 
   <body>
     <ul id="messages"></ul>
+    <button onClick="vote()">vote</button>
+    <button onClick="vote2()">vote2</button>
+    <button onClick="voteClear()">voteClear</button>
     <form action="">
       <input id="m" autocomplete="off" /><button>Send</button>
     </form>
 
     <script>
       // 위의 socket.io.js에서 뽑아 쓴다.
-      const socket = io.connect("http://localhost:8005", {
+      const socket = io.connect("http://localhost:4000", {
         // ws:// 를 안쓰고 http를 쓴다
-        path: "/socket.io", // 서버 path와 일치시켜준다
+        path: "", // 서버 path와 일치시켜준다
         // transports: ['websocket']
       });
+      function vote() {
+        socket.emit("vote", 1);
+      }
+      function vote2() {
+        socket.emit("vote2", 1);
+      }
+      function voteClear() {
+        socket.emit("voteClear");
+      }
       socket.emit("news", "Hello Socket.IO");
       // 서버로부터 메세지 수신
       $("form").submit(() => {
@@ -49,6 +61,12 @@
       });
       socket.on("chat-message", (msg) => {
         $("#messages").append($("<li>").text(msg));
+      });
+      socket.on("news", (msg) => {
+        $("#messages").append($("<li>").text(msg));
+      });
+      socket.on("vote", (cnt) => {
+        $("#messages").append($("<li>").text(cnt));
       });
     </script>
   </body>
